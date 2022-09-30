@@ -86,7 +86,7 @@ abstract class PlayerTurn extends SimpleNpc
       for (var element in _gridCanAttack) {
         canvas.drawCircle(
           element.center,
-          tileSize.x / 4,
+          tileSize.x / 4.5,
           gridAttackPaint,
         );
       }
