@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:turn_game/main.dart';
 import 'package:turn_game/turn_manager.dart';
 
-abstract class CharacterTurn extends SimpleNpc
+abstract class PlayerTurn extends SimpleNpc
     with TapGesture, MoveToPositionAlongThePath, ObjectCollision {
   late TurnManager turnManager;
   late Rect rectYoutGridPosition;
@@ -15,7 +15,7 @@ abstract class CharacterTurn extends SimpleNpc
   Vector2 countTileRadiusMove = Vector2.all(1);
   final List<Rect> _gridCanMove = [];
   bool isSelected = false;
-  CharacterTurn({
+  PlayerTurn({
     required super.position,
     required super.size,
     required super.animation,
@@ -66,7 +66,7 @@ abstract class CharacterTurn extends SimpleNpc
         });
 
         for (var collision in collisions) {
-          if (collision is CharacterTurn) {
+          if (collision is PlayerTurn) {
             _verifyIfInRangeAttack(collision);
           }
         }
@@ -151,7 +151,7 @@ abstract class CharacterTurn extends SimpleNpc
     });
   }
 
-  void _verifyIfInRangeAttack(CharacterTurn char) {
+  void _verifyIfInRangeAttack(PlayerTurn char) {
     if (char == this) {
       return;
     }
@@ -160,5 +160,5 @@ abstract class CharacterTurn extends SimpleNpc
     doAttackChar(char);
   }
 
-  void doAttackChar(CharacterTurn char);
+  void doAttackChar(PlayerTurn char);
 }

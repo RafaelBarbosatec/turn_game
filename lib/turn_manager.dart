@@ -1,7 +1,7 @@
 import 'package:bonfire/base/bonfire_game_interface.dart';
 import 'package:bonfire/bonfire.dart';
-import 'package:turn_game/util/game_ally.dart';
-import 'package:turn_game/util/game_enemy.dart';
+import 'package:turn_game/util/player_ally.dart';
+import 'package:turn_game/util/player_enemy.dart';
 
 enum OwnerTurn { ally, enemy }
 
@@ -12,13 +12,13 @@ class TurnManager {
 
   bool selectCharacter(GameComponent? char) {
     if (ownerTurn == OwnerTurn.ally) {
-      if (char is GameAlly) {
+      if (char is PlayerAlly) {
         characterSelected = char;
         return true;
       }
     }
     if (ownerTurn == OwnerTurn.enemy) {
-      if (char is GameEnemy) {
+      if (char is PlayerEnemy) {
         characterSelected = char;
         return true;
       }
@@ -32,14 +32,14 @@ class TurnManager {
   void chageTurn() {
     if (ownerTurn == OwnerTurn.ally) {
       ownerTurn = OwnerTurn.enemy;
-      final enemy = game?.componentsByType<GameEnemy>() ?? [];
+      final enemy = game?.componentsByType<PlayerEnemy>() ?? [];
       if (enemy.isNotEmpty) {
         enemy.first.onTap();
         game?.camera.moveToTargetAnimated(enemy.first);
       }
     } else {
       ownerTurn = OwnerTurn.ally;
-      final ally = game?.componentsByType<GameAlly>() ?? [];
+      final ally = game?.componentsByType<PlayerAlly>() ?? [];
       if (ally.isNotEmpty) {
         ally.first.onTap();
         game?.camera.moveToTargetAnimated(ally.first);

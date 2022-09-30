@@ -1,9 +1,9 @@
 import 'package:turn_game/main.dart';
 import 'package:turn_game/spritesheet/spritesheet_builder.dart';
-import 'package:turn_game/util/game_ally.dart';
-import 'package:turn_game/util/game_enemy.dart';
+import 'package:turn_game/util/player_ally.dart';
+import 'package:turn_game/util/player_enemy.dart';
 
-class PHero extends GameAlly {
+class PHero extends PlayerAlly {
   PHero({required super.position})
       : super(
           size: tileSize,
@@ -13,7 +13,7 @@ class PHero extends GameAlly {
         );
 
   @override
-  void doAttackEnemy(GameEnemy enemy) {
+  void doAttackEnemy(PlayerEnemy enemy) {
     // TODO: implement doAttackEnemy
   }
 }

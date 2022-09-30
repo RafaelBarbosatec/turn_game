@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:turn_game/util/character_turn.dart';
-import 'package:turn_game/util/game_ally.dart';
+import 'package:turn_game/util/player_turn.dart';
+import 'package:turn_game/util/player_ally.dart';
 
-abstract class GameEnemy extends CharacterTurn {
+abstract class PlayerEnemy extends PlayerTurn {
   @override
   // ignore: overridden_fields
   final Paint rectPaint = Paint()..color = Colors.red.withOpacity(0.5);
 
-  GameEnemy({
+  PlayerEnemy({
     required super.position,
     required super.size,
     required super.animation,
   });
 
   @override
-  void doAttackChar(CharacterTurn char) {
-    if (char is GameAlly) {
+  void doAttackChar(PlayerTurn char) {
+    if (char is PlayerAlly) {
       doAttackAlly(char);
     }
   }
 
-  void doAttackAlly(GameAlly ally);
+  void doAttackAlly(PlayerAlly ally);
 }
