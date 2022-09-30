@@ -1,7 +1,7 @@
 import 'package:bonfire/bonfire.dart';
 import 'package:flutter/material.dart';
 import 'package:turn_game/game.dart';
-import 'package:turn_game/turn_manager.dart';
+import 'package:turn_game/util/turn_manager.dart';
 
 Vector2 tileSize = Vector2.all(16);
 void main() {

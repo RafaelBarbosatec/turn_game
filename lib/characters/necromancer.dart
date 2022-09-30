@@ -5,6 +5,9 @@ import 'package:turn_game/util/player_ally.dart';
 import 'package:turn_game/util/player_enemy.dart';
 
 class Necromancer extends PlayerEnemy {
+  @override
+  // ignore: overridden_fields
+  Vector2 countTileRadiusAttack = Vector2.all(3);
   Necromancer({required super.position})
       : super(
           size: tileSize,
@@ -15,7 +18,7 @@ class Necromancer extends PlayerEnemy {
 
   @override
   void doAttackAlly(PlayerAlly ally) {
-    ally.receiveDamage(AttackFromEnum.ENEMY, 10, 0);
+    ally.receiveDamage(AttackFromEnum.ENEMY, 15, 0);
     Future.delayed(const Duration(milliseconds: 300)).then((value) {
       turnManager.chageTurn();
     });

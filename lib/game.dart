@@ -4,7 +4,8 @@ import 'package:turn_game/characters/ghost.dart';
 import 'package:turn_game/characters/hero.dart';
 import 'package:turn_game/characters/knight.dart';
 import 'package:turn_game/characters/necromancer.dart';
-import 'package:turn_game/turn_manager.dart';
+import 'package:turn_game/interface/turn_painel.dart';
+import 'package:turn_game/util/turn_manager.dart';
 
 class TurnGame extends StatelessWidget {
   const TurnGame({super.key});
@@ -25,6 +26,10 @@ class TurnGame extends StatelessWidget {
           'necro': ((p) => Necromancer(position: p.position)),
         },
       ),
+      overlayBuilderMap: {
+        'painel': (context, game) => const TurnPainel(),
+      },
+      initialActiveOverlays: const ['painel'],
       cameraConfig: CameraConfig(zoom: 2, moveOnlyMapArea: true),
       components: [
         BonfireInjector.instance.get<TurnManager>(),

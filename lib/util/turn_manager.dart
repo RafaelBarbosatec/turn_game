@@ -1,18 +1,18 @@
 import 'dart:math';
 
-import 'package:bonfire/base/bonfire_game_interface.dart';
 import 'package:bonfire/bonfire.dart';
+import 'package:flutter/material.dart';
 import 'package:turn_game/util/player_ally.dart';
 import 'package:turn_game/util/player_enemy.dart';
 
 enum OwnerTurn { ally, enemy }
 
-class TurnManager extends GameComponent {
-  BonfireGameInterface? game;
+class TurnManager extends GameComponent with ChangeNotifier {
   OwnerTurn ownerTurn = OwnerTurn.ally;
   GameComponent? characterSelected;
   PlayerAlly? _lastAlly;
   PlayerEnemy? _lastEnemy;
+  bool endGame = false;
 
   bool selectCharacter(GameComponent? char) {
     if (ownerTurn == OwnerTurn.ally) {
@@ -41,6 +41,7 @@ class TurnManager extends GameComponent {
     } else {
       _selectOneAlly();
     }
+    notifyListeners();
   }
 
   bool isYourTurn(GameComponent char) => char == characterSelected;
@@ -48,25 +49,25 @@ class TurnManager extends GameComponent {
   void _selectOneAlly() {
     ownerTurn = OwnerTurn.ally;
     if (_lastAlly == null || _lastAlly?.isDead == true) {
-      final ally = game?.componentsByType<PlayerAlly>() ?? [];
+      final ally = gameRef.componentsByType<PlayerAlly>();
       if (ally.isNotEmpty) {
         _lastAlly = ally.first;
       }
     }
     _lastAlly?.onTap();
-    game?.camera.target = _lastAlly;
+    gameRef.camera.target = _lastAlly;
   }
 
   void _selectOneEnemy() {
     ownerTurn = OwnerTurn.enemy;
     if (_lastEnemy == null || _lastEnemy?.isDead == true) {
-      final enemy = game?.componentsByType<PlayerEnemy>() ?? [];
+      final enemy = gameRef.componentsByType<PlayerEnemy>();
       if (enemy.isNotEmpty) {
         _lastEnemy = enemy.first;
       }
     }
     _lastEnemy?.onTap();
-    game?.camera.target = _lastEnemy;
+    gameRef.camera.target = _lastEnemy;
   }
 
   @override
@@ -76,6 +77,7 @@ class TurnManager extends GameComponent {
   }
 
   void startGame() async {
+    endGame = false;
     await Future.delayed(const Duration(milliseconds: 500));
     bool startAlly = Random().nextBool();
     if (startAlly) {
@@ -83,5 +85,41 @@ class TurnManager extends GameComponent {
     } else {
       _selectOneEnemy();
     }
+  }
+
+  @override
+  void update(double dt) {
+    if (checkInterval('GAME_OVER', 1000, dt) && !endGame) {
+      var enemyLife = gameRef
+          .componentsByType<PlayerEnemy>()
+          .where((element) => !element.isDead);
+      if (enemyLife.isEmpty) {
+        endGame = true;
+        showDialog(
+          context: context,
+          builder: (context) {
+            return const AlertDialog(
+              title: Text('Ally win'),
+            );
+          },
+        );
+      }
+
+      var allyLife = gameRef
+          .componentsByType<PlayerAlly>()
+          .where((element) => !element.isDead);
+      if (allyLife.isEmpty) {
+        endGame = true;
+        showDialog(
+          context: context,
+          builder: (context) {
+            return const AlertDialog(
+              title: Text('Enemy win'),
+            );
+          },
+        );
+      }
+    }
+    super.update(dt);
   }
 }

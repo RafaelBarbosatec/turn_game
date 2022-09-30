@@ -2,7 +2,7 @@ import 'package:bonfire/bonfire.dart';
 import 'package:flutter/material.dart';
 import 'package:turn_game/main.dart';
 import 'package:turn_game/spritesheet/spritesheet_builder.dart';
-import 'package:turn_game/turn_manager.dart';
+import 'package:turn_game/util/turn_manager.dart';
 
 abstract class PlayerTurn extends SimpleNpc
     with TapGesture, MoveToPositionAlongThePath, ObjectCollision, Attackable {
@@ -124,7 +124,6 @@ abstract class PlayerTurn extends SimpleNpc
   @override
   void onMount() {
     turnManager = BonfireInjector.instance.get();
-    turnManager.game = gameRef;
     super.onMount();
   }
 
