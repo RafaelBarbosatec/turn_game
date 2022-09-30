@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bonfire/bonfire.dart';
 import 'package:flutter/material.dart';
 import 'package:turn_game/characters/ghost.dart';
@@ -5,6 +7,7 @@ import 'package:turn_game/characters/hero.dart';
 import 'package:turn_game/characters/knight.dart';
 import 'package:turn_game/characters/necromancer.dart';
 import 'package:turn_game/interface/turn_painel.dart';
+import 'package:turn_game/main.dart';
 import 'package:turn_game/util/turn_manager.dart';
 
 class TurnGame extends StatelessWidget {
@@ -12,28 +15,33 @@ class TurnGame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BonfireWidget(
-      joystick: JoystickMoveToPosition(
-        enabledMoveCameraWithClick: true,
-        mouseButtonUsedToMoveCamera: MouseButton.right,
-      ),
-      map: WorldMapByTiled(
-        'map/map1.tmj',
-        objectsBuilder: {
-          'hero': ((p) => PHero(position: p.position)),
-          'ghost': ((p) => Ghost(position: p.position)),
-          'knight': ((p) => Knight(position: p.position)),
-          'necro': ((p) => Necromancer(position: p.position)),
+    return LayoutBuilder(builder: (context, constraint) {
+      double size = max(constraint.maxWidth, constraint.minHeight);
+      double tileSizeScrren = size / 20;
+      double zoom = tileSizeScrren / tileSize.x;
+      return BonfireWidget(
+        joystick: JoystickMoveToPosition(
+          enabledMoveCameraWithClick: true,
+          mouseButtonUsedToMoveCamera: MouseButton.right,
+        ),
+        map: WorldMapByTiled(
+          'map/map1.tmj',
+          objectsBuilder: {
+            'hero': ((p) => PHero(position: p.position)),
+            'ghost': ((p) => Ghost(position: p.position)),
+            'knight': ((p) => Knight(position: p.position)),
+            'necro': ((p) => Necromancer(position: p.position)),
+          },
+        ),
+        overlayBuilderMap: {
+          'painel': (context, game) => const TurnPainel(),
         },
-      ),
-      overlayBuilderMap: {
-        'painel': (context, game) => const TurnPainel(),
-      },
-      initialActiveOverlays: const ['painel'],
-      cameraConfig: CameraConfig(zoom: 2, moveOnlyMapArea: true),
-      components: [
-        BonfireInjector.instance.get<TurnManager>(),
-      ],
-    );
+        initialActiveOverlays: const ['painel'],
+        cameraConfig: CameraConfig(zoom: zoom, moveOnlyMapArea: true),
+        components: [
+          BonfireInjector.instance.get<TurnManager>(),
+        ],
+      );
+    });
   }
 }

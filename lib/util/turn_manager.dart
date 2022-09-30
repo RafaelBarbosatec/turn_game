@@ -57,7 +57,9 @@ class TurnManager extends GameComponent with ChangeNotifier {
       }
     }
     _lastAlly?.onTap();
-    gameRef.camera.target = _lastAlly;
+    if (_lastAlly != null) {
+      gameRef.camera.moveToTargetAnimated(_lastAlly!);
+    }
   }
 
   void _selectOneEnemy() {
@@ -71,7 +73,9 @@ class TurnManager extends GameComponent with ChangeNotifier {
       }
     }
     _lastEnemy?.onTap();
-    gameRef.camera.target = _lastEnemy;
+    if (_lastEnemy != null) {
+      gameRef.camera.moveToTargetAnimated(_lastEnemy!);
+    }
   }
 
   @override
