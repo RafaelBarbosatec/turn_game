@@ -1,10 +1,11 @@
 import 'package:bonfire/bonfire.dart';
 import 'package:flutter/material.dart';
 import 'package:turn_game/main.dart';
+import 'package:turn_game/spritesheet/spritesheet_builder.dart';
 import 'package:turn_game/turn_manager.dart';
 
 abstract class PlayerTurn extends SimpleNpc
-    with TapGesture, MoveToPositionAlongThePath, ObjectCollision {
+    with TapGesture, MoveToPositionAlongThePath, ObjectCollision, Attackable {
   late TurnManager turnManager;
   late Rect rectYoutGridPosition;
   final Paint rectPaint = Paint()..color = Colors.blue.withOpacity(0.5);
@@ -19,6 +20,10 @@ abstract class PlayerTurn extends SimpleNpc
   final List<Rect> _gridCanMove = [];
   final List<Rect> _gridCanAttack = [];
   bool isSelected = false;
+  bool _alreadyRecieveDamage = false;
+
+  void doAttackChar(PlayerTurn char);
+
   PlayerTurn({
     required super.position,
     required super.size,
@@ -93,6 +98,18 @@ abstract class PlayerTurn extends SimpleNpc
     }
 
     super.render(canvas);
+    if (_alreadyRecieveDamage) {
+      drawDefaultLifeBar(
+        canvas,
+        align: Offset(
+          0,
+          -(tileSize.y / 3),
+        ),
+        borderWidth: 2,
+        height: 3,
+        borderRadius: BorderRadius.circular(1),
+      );
+    }
   }
 
   @override
@@ -196,8 +213,6 @@ abstract class PlayerTurn extends SimpleNpc
     }
   }
 
-  void doAttackChar(PlayerTurn char);
-
   void _checkIfMove(Vector2 worldPosition) {
     final find = _gridCanMove.where((element) {
       return element.contains(worldPosition.toOffset());
@@ -215,5 +230,41 @@ abstract class PlayerTurn extends SimpleNpc
         );
       }
     }
+  }
+
+  @override
+  void receiveDamage(AttackFromEnum attacker, double damage, identify) {
+    _alreadyRecieveDamage = true;
+    showDamage(damage, config: TextStyle(fontSize: tileSize.x / 2));
+    var lastDirection = lastDirectionHorizontal;
+    if (lastDirection == Direction.left) {
+      animation?.playOnce(
+        animation!.others[SpriteSheetBuilder.ANIMATION_HITED_LEFT]!,
+      );
+    } else {
+      animation?.playOnce(
+        animation!.others[SpriteSheetBuilder.ANIMATION_HITED_RIGHT]!,
+      );
+    }
+
+    super.receiveDamage(attacker, damage, identify);
+  }
+
+  @override
+  void die() {
+    var lastDirection = lastDirectionHorizontal;
+    if (lastDirection == Direction.left) {
+      animation?.playOnce(
+        animation!.others[SpriteSheetBuilder.ANIMATION_DIE_LEFT]!,
+        onFinish: removeFromParent,
+      );
+    } else {
+      animation?.playOnce(
+        animation!.others[SpriteSheetBuilder.ANIMATION_DIE_RIGHT]!,
+        onFinish: removeFromParent,
+      );
+    }
+
+    super.die();
   }
 }
