@@ -19,6 +19,6 @@ class Knight extends PlayerAlly {
 
   @override
   void doAttackEnemy(PlayerEnemy enemy) {
-    // TODO: implement doAttackEnemy
+    print(enemy);
   }
 }

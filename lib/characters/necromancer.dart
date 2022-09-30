@@ -18,6 +18,6 @@ class Necromancer extends PlayerEnemy {
 
   @override
   void doAttackAlly(PlayerAlly ally) {
-    // TODO: implement doAttackAlly
+    print(ally);
   }
 }

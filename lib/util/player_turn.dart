@@ -12,8 +12,12 @@ abstract class PlayerTurn extends SimpleNpc
     ..color = Colors.white.withOpacity(0.5)
     ..strokeWidth = 1
     ..style = PaintingStyle.stroke;
+
+  final Paint gridAttackPaint = Paint()..color = Colors.red.withOpacity(0.5);
   Vector2 countTileRadiusMove = Vector2.all(1);
+  Vector2 countTileRadiusAttack = Vector2.all(1);
   final List<Rect> _gridCanMove = [];
+  final List<Rect> _gridCanAttack = [];
   bool isSelected = false;
   PlayerTurn({
     required super.position,
@@ -48,6 +52,7 @@ abstract class PlayerTurn extends SimpleNpc
       }
     }
     _calculateGridCanMove();
+    _calculateGridCanAttack();
   }
 
   @override
@@ -55,31 +60,9 @@ abstract class PlayerTurn extends SimpleNpc
     if (isSelected) {
       final worldPosition = gameRef.screenToWorld(event.position.toVector2());
 
-      final find = _gridCanMove.where((element) {
-        return element.contains(worldPosition.toOffset());
-      });
+      _checkIfMove(worldPosition);
 
-      if (find.isNotEmpty) {
-        final collisions = gameRef.collisions().where((element) {
-          return element.rectConsideringCollision
-              .overlaps(find.first.deflate(2));
-        });
-
-        for (var collision in collisions) {
-          if (collision is PlayerTurn) {
-            _verifyIfInRangeAttack(collision);
-          }
-        }
-
-        if (collisions.isNotEmpty) {
-          return super.handlerPointerDown(event);
-        }
-
-        moveToPositionAlongThePath(
-          gameRef.screenToWorld(event.position.toVector2()),
-          onFinish: turnManager.chageTurn,
-        );
-      }
+      _checkIfAttack(worldPosition);
     }
     return super.handlerPointerDown(event);
   }
@@ -98,6 +81,14 @@ abstract class PlayerTurn extends SimpleNpc
       }
       for (var element in _gridCanMove) {
         canvas.drawRect(element, gridPaint);
+      }
+
+      for (var element in _gridCanAttack) {
+        canvas.drawCircle(
+          element.center,
+          tileSize.x / 4,
+          gridAttackPaint,
+        );
       }
     }
 
@@ -138,7 +129,42 @@ abstract class PlayerTurn extends SimpleNpc
       List.generate(
         sizeX,
         (indexX) {
-          _gridCanMove.add(
+          var rect = Rect.fromLTWH(
+            startXGrid + indexX * width,
+            startYGrid + indexY * height,
+            width,
+            height,
+          );
+          bool containCollision = gameRef.collisions().where((element) {
+            return element.rectConsideringCollision.overlaps(rect);
+          }).isNotEmpty;
+          if (!containCollision) {
+            _gridCanMove.add(rect);
+          }
+        },
+      );
+    });
+  }
+
+  void _calculateGridCanAttack() {
+    _gridCanAttack.clear();
+    double xGrid = center.x ~/ tileSize.x * tileSize.x;
+    double yGrid = center.y ~/ tileSize.y * tileSize.y;
+
+    double deslocamentoX = countTileRadiusAttack.x * tileSize.x;
+    double deslocamentoY = countTileRadiusAttack.y * tileSize.y;
+
+    double startXGrid = xGrid - deslocamentoX;
+    double startYGrid = yGrid - deslocamentoY;
+
+    int sizeX = countTileRadiusAttack.x.toInt() * 2 + 1;
+    int sizeY = countTileRadiusAttack.y.toInt() * 2 + 1;
+
+    List.generate(sizeY, (indexY) {
+      List.generate(
+        sizeX,
+        (indexX) {
+          _gridCanAttack.add(
             Rect.fromLTWH(
               startXGrid + indexX * width,
               startYGrid + indexY * height,
@@ -151,14 +177,43 @@ abstract class PlayerTurn extends SimpleNpc
     });
   }
 
-  void _verifyIfInRangeAttack(PlayerTurn char) {
-    if (char == this) {
-      return;
-    }
+  void _checkIfAttack(Vector2 worldPosition) {
+    final findAttack = _gridCanAttack.where((element) {
+      return element.contains(worldPosition.toOffset());
+    });
 
-    /// Implementar aqui area de ataque.
-    doAttackChar(char);
+    if (findAttack.isNotEmpty) {
+      final players = gameRef.componentsByType<PlayerTurn>().where((element) {
+        return element.rectConsideringCollision
+            .overlaps(findAttack.first.deflate(2));
+      });
+
+      for (var p in players) {
+        if (p != this) {
+          doAttackChar(p);
+        }
+      }
+    }
   }
 
   void doAttackChar(PlayerTurn char);
+
+  void _checkIfMove(Vector2 worldPosition) {
+    final find = _gridCanMove.where((element) {
+      return element.contains(worldPosition.toOffset());
+    });
+
+    if (find.isNotEmpty) {
+      final collisions = gameRef.collisions().where((element) {
+        return element.rectConsideringCollision.overlaps(find.first.deflate(2));
+      });
+
+      if (!collisions.isNotEmpty) {
+        moveToPositionAlongThePath(
+          worldPosition,
+          onFinish: turnManager.chageTurn,
+        );
+      }
+    }
+  }
 }
