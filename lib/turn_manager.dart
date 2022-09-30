@@ -11,17 +11,21 @@ class TurnManager extends GameComponent {
   BonfireGameInterface? game;
   OwnerTurn ownerTurn = OwnerTurn.ally;
   GameComponent? characterSelected;
+  PlayerAlly? _lastAlly;
+  PlayerEnemy? _lastEnemy;
 
   bool selectCharacter(GameComponent? char) {
     if (ownerTurn == OwnerTurn.ally) {
       if (char is PlayerAlly) {
         characterSelected = char;
+        _lastAlly = char;
         return true;
       }
     }
     if (ownerTurn == OwnerTurn.enemy) {
       if (char is PlayerEnemy) {
         characterSelected = char;
+        _lastEnemy = char;
         return true;
       }
     }
@@ -53,20 +57,28 @@ class TurnManager extends GameComponent {
 
   void _selectOneAlly() {
     ownerTurn = OwnerTurn.ally;
-    final ally = game?.componentsByType<PlayerAlly>() ?? [];
-    if (ally.isNotEmpty) {
-      ally.first.onTap();
-      game?.camera.target = ally.first;
+    if (_lastAlly == null) {
+      final ally = game?.componentsByType<PlayerAlly>() ?? [];
+      if (ally.isNotEmpty) {
+        _lastAlly = ally.first;
+      }
     }
+
+    _lastAlly?.onTap();
+    game?.camera.target = _lastAlly;
   }
 
   void _selectOneEnemy() {
     ownerTurn = OwnerTurn.enemy;
-    final enemy = game?.componentsByType<PlayerEnemy>() ?? [];
-    if (enemy.isNotEmpty) {
-      enemy.first.onTap();
-      game?.camera.target = enemy.first;
+    if (_lastEnemy == null) {
+      final enemy = game?.componentsByType<PlayerEnemy>() ?? [];
+      if (enemy.isNotEmpty) {
+        _lastEnemy = enemy.first;
+      }
     }
+
+    _lastEnemy?.onTap();
+    game?.camera.target = _lastEnemy;
   }
 
   @override

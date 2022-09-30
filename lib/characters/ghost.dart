@@ -1,9 +1,14 @@
+import 'package:bonfire/bonfire.dart';
 import 'package:turn_game/main.dart';
 import 'package:turn_game/spritesheet/spritesheet_builder.dart';
 import 'package:turn_game/util/player_ally.dart';
 import 'package:turn_game/util/player_enemy.dart';
 
 class Ghost extends PlayerEnemy {
+  @override
+  // ignore: overridden_fields
+  Vector2 countTileRadiusMove = Vector2.all(2);
+  
   Ghost({required super.position})
       : super(
           size: tileSize,
@@ -14,6 +19,9 @@ class Ghost extends PlayerEnemy {
 
   @override
   void doAttackAlly(PlayerAlly ally) {
-    print(ally);
+    ally.receiveDamage(AttackFromEnum.ENEMY, 25, 0);
+    Future.delayed(const Duration(milliseconds: 300)).then((value) {
+      turnManager.chageTurn();
+    });
   }
 }
