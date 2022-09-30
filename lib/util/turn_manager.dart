@@ -49,7 +49,9 @@ class TurnManager extends GameComponent with ChangeNotifier {
   void _selectOneAlly() {
     ownerTurn = OwnerTurn.ally;
     if (_lastAlly == null || _lastAlly?.isDead == true) {
-      final ally = gameRef.componentsByType<PlayerAlly>();
+      final ally = gameRef
+          .componentsByType<PlayerAlly>()
+          .where((element) => !element.isDead);
       if (ally.isNotEmpty) {
         _lastAlly = ally.first;
       }
@@ -61,7 +63,9 @@ class TurnManager extends GameComponent with ChangeNotifier {
   void _selectOneEnemy() {
     ownerTurn = OwnerTurn.enemy;
     if (_lastEnemy == null || _lastEnemy?.isDead == true) {
-      final enemy = gameRef.componentsByType<PlayerEnemy>();
+      final enemy = gameRef
+          .componentsByType<PlayerEnemy>()
+          .where((element) => !element.isDead);
       if (enemy.isNotEmpty) {
         _lastEnemy = enemy.first;
       }
