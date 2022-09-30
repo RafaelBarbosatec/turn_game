@@ -15,7 +15,9 @@ class Knight extends PlayerAlly {
           animation: SpriteSheetBuilder.build(
             SpriteSheetBuilder.SPRITE_KNIGHT,
           ),
-        );
+        ) {
+    initialLife(150);
+  }
 
   @override
   void doAttackEnemy(PlayerEnemy enemy) {

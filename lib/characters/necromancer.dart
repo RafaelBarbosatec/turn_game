@@ -1,3 +1,4 @@
+import 'package:bonfire/bonfire.dart';
 import 'package:turn_game/main.dart';
 import 'package:turn_game/spritesheet/spritesheet_builder.dart';
 import 'package:turn_game/util/player_ally.dart';
@@ -14,6 +15,9 @@ class Necromancer extends PlayerEnemy {
 
   @override
   void doAttackAlly(PlayerAlly ally) {
-    print(ally);
+    ally.receiveDamage(AttackFromEnum.ENEMY, 10, 0);
+    Future.delayed(const Duration(milliseconds: 300)).then((value) {
+      turnManager.chageTurn();
+    });
   }
 }

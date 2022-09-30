@@ -8,14 +8,16 @@ class Ghost extends PlayerEnemy {
   @override
   // ignore: overridden_fields
   Vector2 countTileRadiusMove = Vector2.all(2);
-  
+
   Ghost({required super.position})
       : super(
           size: tileSize,
           animation: SpriteSheetBuilder.build(
             SpriteSheetBuilder.SPRITE_GHOST,
           ),
-        );
+        ) {
+    initialLife(150);
+  }
 
   @override
   void doAttackAlly(PlayerAlly ally) {

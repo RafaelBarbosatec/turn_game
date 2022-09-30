@@ -45,16 +45,6 @@ class TurnManager extends GameComponent {
 
   bool isYourTurn(GameComponent char) => char == characterSelected;
 
-  void startGame() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    bool startAlly = Random().nextBool();
-    if (startAlly) {
-      _selectOneAlly();
-    } else {
-      _selectOneEnemy();
-    }
-  }
-
   void _selectOneAlly() {
     ownerTurn = OwnerTurn.ally;
     if (_lastAlly == null || _lastAlly?.isDead == true) {
@@ -63,7 +53,6 @@ class TurnManager extends GameComponent {
         _lastAlly = ally.first;
       }
     }
-
     _lastAlly?.onTap();
     game?.camera.target = _lastAlly;
   }
@@ -76,7 +65,6 @@ class TurnManager extends GameComponent {
         _lastEnemy = enemy.first;
       }
     }
-
     _lastEnemy?.onTap();
     game?.camera.target = _lastEnemy;
   }
@@ -85,5 +73,15 @@ class TurnManager extends GameComponent {
   void onMount() {
     startGame();
     super.onMount();
+  }
+
+  void startGame() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    bool startAlly = Random().nextBool();
+    if (startAlly) {
+      _selectOneAlly();
+    } else {
+      _selectOneEnemy();
+    }
   }
 }
