@@ -57,7 +57,7 @@ class TurnManager extends GameComponent {
 
   void _selectOneAlly() {
     ownerTurn = OwnerTurn.ally;
-    if (_lastAlly == null) {
+    if (_lastAlly == null || _lastAlly?.isDead == true) {
       final ally = game?.componentsByType<PlayerAlly>() ?? [];
       if (ally.isNotEmpty) {
         _lastAlly = ally.first;
@@ -70,7 +70,7 @@ class TurnManager extends GameComponent {
 
   void _selectOneEnemy() {
     ownerTurn = OwnerTurn.enemy;
-    if (_lastEnemy == null) {
+    if (_lastEnemy == null || _lastEnemy?.isDead == true) {
       final enemy = game?.componentsByType<PlayerEnemy>() ?? [];
       if (enemy.isNotEmpty) {
         _lastEnemy = enemy.first;
