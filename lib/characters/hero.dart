@@ -38,6 +38,8 @@ class PHero extends PlayerAlly {
         attackFrom: AttackFromEnum.PLAYER_OR_ALLY,
         withPush: false,
       );
+      Future.delayed(const Duration(milliseconds: 300))
+        .then((value) => turnManager.doAction());
     }
   }
 }

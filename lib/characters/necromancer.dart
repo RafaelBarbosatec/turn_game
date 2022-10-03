@@ -38,6 +38,8 @@ class Necromancer extends PlayerEnemy {
         attackFrom: AttackFromEnum.ENEMY,
         withPush: false,
       );
+      Future.delayed(const Duration(milliseconds: 300))
+          .then((value) => turnManager.doAction());
     }
   }
 }
