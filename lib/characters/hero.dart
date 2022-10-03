@@ -18,14 +18,26 @@ class PHero extends PlayerAlly {
 
   @override
   void doAttackEnemy(PlayerEnemy enemy) {
-    simpleAttackRangeByAngle(
-      animation: SpriteSheetBuilder.fireballRight,
-      size: size,
-      angle: BonfireUtil.angleBetweenPoints(center, enemy.center),
-      damage: 20,
-      attackFrom: AttackFromEnum.PLAYER_OR_ALLY,
-      onDestroy: turnManager.doAction,
-      marginFromOrigin: tileSize.x,
-    );
+    int distance = center.distanceTo(enemy.center).round();
+    if (distance * 0.9 > tileSize.x) {
+      simpleAttackRangeByAngle(
+        animation: SpriteSheetBuilder.fireballRight,
+        size: size,
+        angle: BonfireUtil.angleBetweenPoints(center, enemy.center),
+        damage: 20,
+        attackFrom: AttackFromEnum.PLAYER_OR_ALLY,
+        onDestroy: turnManager.doAction,
+        marginFromOrigin: tileSize.x,
+      );
+    } else {
+      simpleAttackMeleeByAngle(
+        animation: SpriteSheetBuilder.attackRight,
+        size: size,
+        angle: BonfireUtil.angleBetweenPoints(center, enemy.center),
+        damage: 25,
+        attackFrom: AttackFromEnum.PLAYER_OR_ALLY,
+        withPush: false,
+      );
+    }
   }
 }

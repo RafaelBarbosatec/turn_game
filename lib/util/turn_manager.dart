@@ -141,7 +141,7 @@ class TurnManager extends GameComponent with ChangeNotifier {
           actions: [
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pushAndRemoveUntil(
+                Navigator.of(gameRef.context).pushAndRemoveUntil(
                   MaterialPageRoute(builder: (_) => const TurnGame()),
                   (route) => false,
                 );

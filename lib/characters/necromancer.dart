@@ -18,14 +18,26 @@ class Necromancer extends PlayerEnemy {
 
   @override
   void doAttackAlly(PlayerAlly ally) {
-    simpleAttackRangeByAngle(
-      animation: SpriteSheetBuilder.fireballRight,
-      size: size,
-      angle: BonfireUtil.angleBetweenPoints(center, ally.center),
-      damage: 20,
-      attackFrom: AttackFromEnum.ENEMY,
-      onDestroy: turnManager.doAction,
-      marginFromOrigin: tileSize.x,
-    );
+    int distance = center.distanceTo(ally.center).round();
+    if (distance * 0.9 > tileSize.x) {
+      simpleAttackRangeByAngle(
+        animation: SpriteSheetBuilder.fireballRight,
+        size: size,
+        angle: BonfireUtil.angleBetweenPoints(center, ally.center),
+        damage: 20,
+        attackFrom: AttackFromEnum.ENEMY,
+        onDestroy: turnManager.doAction,
+        marginFromOrigin: tileSize.x,
+      );
+    } else {
+      simpleAttackMeleeByAngle(
+        animation: SpriteSheetBuilder.attackRight,
+        size: size,
+        angle: BonfireUtil.angleBetweenPoints(center, ally.center),
+        damage: 25,
+        attackFrom: AttackFromEnum.ENEMY,
+        withPush: false,
+      );
+    }
   }
 }
