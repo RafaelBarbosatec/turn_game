@@ -22,7 +22,6 @@ class TurnGame extends StatelessWidget {
       return BonfireWidget(
         joystick: JoystickMoveToPosition(
           enabledMoveCameraWithClick: true,
-          mouseButtonUsedToMoveCamera: MouseButton.right,
         ),
         map: WorldMapByTiled(
           'map/map1.tmj',

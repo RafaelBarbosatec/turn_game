@@ -9,6 +9,7 @@ abstract class PlayerTurn extends SimpleNpc
   late TurnManager turnManager;
   late Rect rectYoutGridPosition;
   final Paint rectPaint = Paint()..color = Colors.blue.withOpacity(0.5);
+  final Paint _rectPaintClick = Paint()..color = Colors.white.withOpacity(0.5);
   final Paint gridPaint = Paint()
     ..color = Colors.white.withOpacity(0.5)
     ..strokeWidth = 1
@@ -20,6 +21,7 @@ abstract class PlayerTurn extends SimpleNpc
   final List<Rect> _gridCanMove = [];
   final List<Rect> _gridCanAttack = [];
   bool isSelected = false;
+  Rect? rectClick;
 
   void doAttackChar(PlayerTurn char);
 
@@ -55,19 +57,24 @@ abstract class PlayerTurn extends SimpleNpc
         gameRef.camera.moveToTargetAnimated(this);
       }
     }
-    _calculateAtackAndMoveGrid();
+    _calculateAttackAndMoveGrid();
   }
 
   @override
   bool handlerPointerDown(PointerDownEvent event) {
     if (isSelected) {
       final worldPosition = gameRef.screenToWorld(event.position.toVector2());
-
       _checkIfMove(worldPosition);
-
       _checkIfAttack(worldPosition);
+      _getRectClick(worldPosition);
     }
     return super.handlerPointerDown(event);
+  }
+
+  @override
+  bool handlerPointerUp(PointerUpEvent event) {
+    rectClick = null;
+    return super.handlerPointerUp(event);
   }
 
   @override
@@ -82,30 +89,27 @@ abstract class PlayerTurn extends SimpleNpc
           rectPaint,
         );
       }
-      for (var element in _gridCanMove) {
-        canvas.drawRect(element, gridPaint);
-      }
+      _renderMoveGrid(canvas);
 
-      for (var element in _gridCanAttack) {
-        canvas.drawCircle(
-          element.center,
-          tileSize.x / 4.5,
-          gridAttackPaint,
-        );
-      }
+      _renderAttackGrid(canvas);
     }
 
-    super.render(canvas);
     drawDefaultLifeBar(
       canvas,
-      align: Offset(
-        0,
-        -(tileSize.y / 3),
-      ),
+      align: Offset(0, -(tileSize.y / 3)),
       borderWidth: 2,
       height: 3,
       borderRadius: BorderRadius.circular(1),
     );
+
+    if (rectClick != null) {
+      canvas.drawRect(
+        rectClick!,
+        _rectPaintClick,
+      );
+    }
+
+    super.render(canvas);
   }
 
   @override
@@ -125,8 +129,8 @@ abstract class PlayerTurn extends SimpleNpc
 
   void _calculateGridCanMove() {
     _gridCanMove.clear();
-    double xGrid = center.x ~/ tileSize.x * tileSize.x;
-    double yGrid = center.y ~/ tileSize.y * tileSize.y;
+    double xGrid = rectYoutGridPosition.left;
+    double yGrid = rectYoutGridPosition.top;
 
     double deslocamentoX = countTileRadiusMove.x * tileSize.x;
     double deslocamentoY = countTileRadiusMove.y * tileSize.y;
@@ -160,8 +164,8 @@ abstract class PlayerTurn extends SimpleNpc
 
   void _calculateGridCanAttack() {
     _gridCanAttack.clear();
-    double xGrid = center.x ~/ tileSize.x * tileSize.x;
-    double yGrid = center.y ~/ tileSize.y * tileSize.y;
+    double xGrid = rectYoutGridPosition.left;
+    double yGrid = rectYoutGridPosition.top;
 
     double deslocamentoX = countTileRadiusAttack.x * tileSize.x;
     double deslocamentoY = countTileRadiusAttack.y * tileSize.y;
@@ -222,7 +226,7 @@ abstract class PlayerTurn extends SimpleNpc
         moveToPositionAlongThePath(
           worldPosition,
           onFinish: () {
-            _calculateAtackAndMoveGrid();
+            _calculateAttackAndMoveGrid();
             turnManager.doAction();
           },
         );
@@ -265,8 +269,30 @@ abstract class PlayerTurn extends SimpleNpc
     super.die();
   }
 
-  void _calculateAtackAndMoveGrid() {
+  void _calculateAttackAndMoveGrid() {
     _calculateGridCanMove();
     _calculateGridCanAttack();
+  }
+
+  void _renderMoveGrid(Canvas canvas) {
+    for (var element in _gridCanMove) {
+      canvas.drawRect(element, gridPaint);
+    }
+  }
+
+  void _renderAttackGrid(Canvas canvas) {
+    for (var element in _gridCanAttack) {
+      canvas.drawCircle(
+        element.center,
+        tileSize.x / 4.5,
+        gridAttackPaint,
+      );
+    }
+  }
+
+  void _getRectClick(Vector2 worldPosition) {
+    double xGrid = worldPosition.x ~/ tileSize.x * tileSize.x;
+    double yGrid = worldPosition.y ~/ tileSize.y * tileSize.y;
+    rectClick = Rect.fromLTWH(xGrid, yGrid, tileSize.x, tileSize.y);
   }
 }
