@@ -236,6 +236,9 @@ abstract class PlayerTurn extends SimpleNpc
 
   @override
   void receiveDamage(AttackFromEnum attacker, double damage, identify) {
+    if (isDead) {
+      return;
+    }
     showDamage(damage, config: TextStyle(fontSize: tileSize.x / 2));
     var lastDirection = lastDirectionHorizontal;
     if (lastDirection == Direction.left) {
