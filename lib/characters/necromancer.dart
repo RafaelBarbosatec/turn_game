@@ -19,8 +19,7 @@ class Necromancer extends PlayerEnemy {
   @override
   void doAttackAlly(PlayerAlly ally) {
     ally.receiveDamage(AttackFromEnum.ENEMY, 15, 0);
-    Future.delayed(const Duration(milliseconds: 300)).then((value) {
-      turnManager.chageTurn();
-    });
+    Future.delayed(const Duration(milliseconds: 300))
+        .then((value) => turnManager.doAction());
   }
 }

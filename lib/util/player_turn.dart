@@ -20,7 +20,6 @@ abstract class PlayerTurn extends SimpleNpc
   final List<Rect> _gridCanMove = [];
   final List<Rect> _gridCanAttack = [];
   bool isSelected = false;
-  bool _alreadyRecieveDamage = false;
 
   void doAttackChar(PlayerTurn char);
 
@@ -56,8 +55,7 @@ abstract class PlayerTurn extends SimpleNpc
         gameRef.camera.moveToTargetAnimated(this);
       }
     }
-    _calculateGridCanMove();
-    _calculateGridCanAttack();
+    _calculateAtackAndMoveGrid();
   }
 
   @override
@@ -98,18 +96,16 @@ abstract class PlayerTurn extends SimpleNpc
     }
 
     super.render(canvas);
-    if (_alreadyRecieveDamage) {
-      drawDefaultLifeBar(
-        canvas,
-        align: Offset(
-          0,
-          -(tileSize.y / 3),
-        ),
-        borderWidth: 2,
-        height: 3,
-        borderRadius: BorderRadius.circular(1),
-      );
-    }
+    drawDefaultLifeBar(
+      canvas,
+      align: Offset(
+        0,
+        -(tileSize.y / 3),
+      ),
+      borderWidth: 2,
+      height: 3,
+      borderRadius: BorderRadius.circular(1),
+    );
   }
 
   @override
@@ -225,7 +221,10 @@ abstract class PlayerTurn extends SimpleNpc
       if (!collisions.isNotEmpty) {
         moveToPositionAlongThePath(
           worldPosition,
-          onFinish: turnManager.chageTurn,
+          onFinish: () {
+            _calculateAtackAndMoveGrid();
+            turnManager.doAction();
+          },
         );
       }
     }
@@ -233,7 +232,6 @@ abstract class PlayerTurn extends SimpleNpc
 
   @override
   void receiveDamage(AttackFromEnum attacker, double damage, identify) {
-    _alreadyRecieveDamage = true;
     showDamage(damage, config: TextStyle(fontSize: tileSize.x / 2));
     var lastDirection = lastDirectionHorizontal;
     if (lastDirection == Direction.left) {
@@ -265,5 +263,10 @@ abstract class PlayerTurn extends SimpleNpc
     }
 
     super.die();
+  }
+
+  void _calculateAtackAndMoveGrid() {
+    _calculateGridCanMove();
+    _calculateGridCanAttack();
   }
 }

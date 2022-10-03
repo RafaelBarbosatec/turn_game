@@ -2,17 +2,22 @@ import 'dart:math';
 
 import 'package:bonfire/bonfire.dart';
 import 'package:flutter/material.dart';
+import 'package:turn_game/game.dart';
 import 'package:turn_game/util/player_ally.dart';
 import 'package:turn_game/util/player_enemy.dart';
 
 enum OwnerTurn { ally, enemy }
 
 class TurnManager extends GameComponent with ChangeNotifier {
+  // ignore: constant_identifier_names
+  static const MAX_ACTION = 2;
   OwnerTurn ownerTurn = OwnerTurn.ally;
   GameComponent? characterSelected;
   PlayerAlly? _lastAlly;
   PlayerEnemy? _lastEnemy;
   bool endGame = false;
+  int _countAction = 0;
+  int get countAction => _countAction;
 
   bool selectCharacter(GameComponent? char) {
     if (ownerTurn == OwnerTurn.ally) {
@@ -40,6 +45,15 @@ class TurnManager extends GameComponent with ChangeNotifier {
       _selectOneEnemy();
     } else {
       _selectOneAlly();
+    }
+    _countAction = 0;
+    notifyListeners();
+  }
+
+  void doAction() {
+    _countAction++;
+    if (_countAction >= MAX_ACTION) {
+      chageTurn();
     }
     notifyListeners();
   }
@@ -93,6 +107,7 @@ class TurnManager extends GameComponent with ChangeNotifier {
     } else {
       _selectOneEnemy();
     }
+    notifyListeners();
   }
 
   @override
@@ -103,14 +118,7 @@ class TurnManager extends GameComponent with ChangeNotifier {
           .where((element) => !element.isDead);
       if (enemyLife.isEmpty) {
         endGame = true;
-        showDialog(
-          context: context,
-          builder: (context) {
-            return const AlertDialog(
-              title: Text('Ally win'),
-            );
-          },
-        );
+        _showDialog('Ally win');
       }
 
       var allyLife = gameRef
@@ -118,16 +126,31 @@ class TurnManager extends GameComponent with ChangeNotifier {
           .where((element) => !element.isDead);
       if (allyLife.isEmpty) {
         endGame = true;
-        showDialog(
-          context: context,
-          builder: (context) {
-            return const AlertDialog(
-              title: Text('Enemy win'),
-            );
-          },
-        );
+        _showDialog('Enemy win');
       }
     }
     super.update(dt);
+  }
+
+  void _showDialog(String s) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(s),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const TurnGame()),
+                  (route) => false,
+                );
+              },
+              child: const Text('Ok'),
+            )
+          ],
+        );
+      },
+    );
   }
 }
