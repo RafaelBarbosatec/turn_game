@@ -73,4 +73,22 @@ class SpriteSheetBuilder {
       },
     );
   }
+
+  static Future<SpriteAnimation> get attackRight => SpriteAnimation.load(
+        'attack_effect_right.png',
+        SpriteAnimationData.sequenced(
+          amount: 3,
+          stepTime: 0.1,
+          textureSize: Vector2(16, 16),
+        ),
+      );
+
+      static Future<SpriteAnimation> get fireballRight => SpriteAnimation.load(
+        'fireball_right.png',
+        SpriteAnimationData.sequenced(
+          amount: 3,
+          stepTime: 0.1,
+          textureSize: Vector2(23, 23),
+        ),
+      );
 }

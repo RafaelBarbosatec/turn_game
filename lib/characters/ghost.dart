@@ -21,7 +21,14 @@ class Ghost extends PlayerEnemy {
 
   @override
   void doAttackAlly(PlayerAlly ally) {
-    ally.receiveDamage(AttackFromEnum.ENEMY, 25, 0);
+    simpleAttackMeleeByAngle(
+      animation: SpriteSheetBuilder.attackRight,
+      size: size,
+      angle: BonfireUtil.angleBetweenPoints(center, ally.center),
+      damage: 25,
+      attackFrom: AttackFromEnum.ENEMY,
+      withPush: false,
+    );
     Future.delayed(const Duration(milliseconds: 300))
         .then((value) => turnManager.doAction());
   }
