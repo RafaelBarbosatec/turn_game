@@ -257,12 +257,14 @@ abstract class PlayerTurn extends SimpleNpc
     if (lastDirection == Direction.left) {
       animation?.playOnce(
         animation!.others[SpriteSheetBuilder.ANIMATION_DIE_LEFT]!,
+        runToTheEnd: true,
         onFinish: removeFromParent,
       );
     } else {
       animation?.playOnce(
         animation!.others[SpriteSheetBuilder.ANIMATION_DIE_RIGHT]!,
         onFinish: removeFromParent,
+        runToTheEnd: true,
       );
     }
 
