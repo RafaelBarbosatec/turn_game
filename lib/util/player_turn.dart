@@ -5,7 +5,12 @@ import 'package:turn_game/spritesheet/spritesheet_builder.dart';
 import 'package:turn_game/util/turn_manager.dart';
 
 abstract class PlayerTurn extends SimpleNpc
-    with TapGesture, MoveToPositionAlongThePath, ObjectCollision, Attackable {
+    with
+        TapGesture,
+        MoveToPositionAlongThePath,
+        ObjectCollision,
+        Attackable,
+        UseBarLife {
   late TurnManager turnManager;
   late Rect rectYoutGridPosition;
   final Paint rectPaint = Paint()..color = Colors.blue.withOpacity(0.5);
@@ -44,6 +49,13 @@ abstract class PlayerTurn extends SimpleNpc
         ],
       ),
     );
+
+    setupBarLife(
+      offset: Vector2(0, -(tileSize.y / 3)),
+      borderWidth: 2,
+      size: Vector2(size.x * 2, 6),
+      borderRadius: BorderRadius.circular(1),
+    );
   }
 
   @override
@@ -78,7 +90,7 @@ abstract class PlayerTurn extends SimpleNpc
   }
 
   @override
-  void render(Canvas canvas) {
+  void renderBeforeTransformation(Canvas canvas) {
     if (isSelected) {
       if (!isMovingAlongThePath) {
         canvas.drawRRect(
@@ -90,26 +102,15 @@ abstract class PlayerTurn extends SimpleNpc
         );
       }
       _renderMoveGrid(canvas);
-
       _renderAttackGrid(canvas);
+      if (rectClick != null) {
+        canvas.drawRect(
+          rectClick!,
+          _rectPaintClick,
+        );
+      }
     }
-
-    drawDefaultLifeBar(
-      canvas,
-      align: Offset(0, -(tileSize.y / 3)),
-      borderWidth: 2,
-      height: 3,
-      borderRadius: BorderRadius.circular(1),
-    );
-
-    if (rectClick != null) {
-      canvas.drawRect(
-        rectClick!,
-        _rectPaintClick,
-      );
-    }
-
-    super.render(canvas);
+    super.renderBeforeTransformation(canvas);
   }
 
   @override
