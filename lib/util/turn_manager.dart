@@ -63,32 +63,34 @@ class TurnManager extends GameComponent with ChangeNotifier {
   void _selectOneAlly() {
     ownerTurn = OwnerTurn.ally;
     if (_lastAlly == null || _lastAlly?.isDead == true) {
-      final ally = gameRef
-          .componentsByType<PlayerAlly>()
-          .where((element) => !element.isDead);
+      final ally =
+          gameRef.query<PlayerAlly>().where((element) => !element.isDead);
       if (ally.isNotEmpty) {
         _lastAlly = ally.first;
       }
     }
     _lastAlly?.onTap();
     if (_lastAlly != null) {
-      gameRef.camera.moveToTargetAnimated(_lastAlly!);
+      gameRef.bonfireCamera.moveToTargetAnimated(
+          target: _lastAlly!, effectController: EffectController(duration: 1));
     }
   }
 
   void _selectOneEnemy() {
     ownerTurn = OwnerTurn.enemy;
     if (_lastEnemy == null || _lastEnemy?.isDead == true) {
-      final enemy = gameRef
-          .componentsByType<PlayerEnemy>()
-          .where((element) => !element.isDead);
+      final enemy =
+          gameRef.query<PlayerEnemy>().where((element) => !element.isDead);
       if (enemy.isNotEmpty) {
         _lastEnemy = enemy.first;
       }
     }
     _lastEnemy?.onTap();
     if (_lastEnemy != null) {
-      gameRef.camera.moveToTargetAnimated(_lastEnemy!);
+      gameRef.bonfireCamera.moveToTargetAnimated(
+        target: _lastEnemy!,
+        effectController: EffectController(duration: 1),
+      );
     }
   }
 
@@ -113,17 +115,15 @@ class TurnManager extends GameComponent with ChangeNotifier {
   @override
   void update(double dt) {
     if (checkInterval('GAME_OVER', 1000, dt) && !endGame) {
-      var enemyLife = gameRef
-          .componentsByType<PlayerEnemy>()
-          .where((element) => !element.isDead);
+      var enemyLife =
+          gameRef.query<PlayerEnemy>().where((element) => !element.isDead);
       if (enemyLife.isEmpty) {
         endGame = true;
         _showDialog('Ally win');
       }
 
-      var allyLife = gameRef
-          .componentsByType<PlayerAlly>()
-          .where((element) => !element.isDead);
+      var allyLife =
+          gameRef.query<PlayerAlly>().where((element) => !element.isDead);
       if (allyLife.isEmpty) {
         endGame = true;
         _showDialog('Enemy win');

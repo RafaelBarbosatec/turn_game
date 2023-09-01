@@ -8,6 +8,7 @@ import 'package:turn_game/characters/knight.dart';
 import 'package:turn_game/characters/necromancer.dart';
 import 'package:turn_game/interface/turn_painel.dart';
 import 'package:turn_game/main.dart';
+import 'package:turn_game/util/move_camera_controller.dart';
 import 'package:turn_game/util/turn_manager.dart';
 
 class TurnGame extends StatelessWidget {
@@ -20,9 +21,6 @@ class TurnGame extends StatelessWidget {
       double tileSizeScrren = size / 20;
       double zoom = tileSizeScrren / tileSize.x;
       return BonfireWidget(
-        joystick: JoystickMoveToPosition(
-          enabledMoveCameraWithClick: true,
-        ),
         map: WorldMapByTiled(
           'map/map1.tmj',
           objectsBuilder: {
@@ -39,6 +37,7 @@ class TurnGame extends StatelessWidget {
         cameraConfig: CameraConfig(zoom: zoom, moveOnlyMapArea: true),
         components: [
           BonfireInjector.instance.get<TurnManager>(),
+          MoveCameraController(),
         ],
       );
     });
