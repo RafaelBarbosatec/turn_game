@@ -77,11 +77,12 @@ abstract class PlayerTurn extends SimpleNpc
 
   void meveCameraToMe() {
     gameRef.bonfireCamera.moveToTargetAnimated(
-        target: this,
-        effectController: EffectController(duration: 1),
-        onComplete: () {
-          gameRef.bonfireCamera.follow(this);
-        });
+      target: this,
+      effectController: EffectController(duration: 1),
+      onComplete: () {
+        gameRef.bonfireCamera.follow(this);
+      },
+    );
   }
 
   @override
@@ -167,7 +168,10 @@ abstract class PlayerTurn extends SimpleNpc
             width,
             height,
           );
-          _gridCanMove.add(rect);
+          bool isInCollision = _checkRectInCollision(rect);
+          if (!isInCollision) {
+            _gridCanMove.add(rect);
+          }
         },
       );
     });
@@ -310,5 +314,11 @@ abstract class PlayerTurn extends SimpleNpc
     double xGrid = worldPosition.x ~/ tileSize.x * tileSize.x;
     double yGrid = worldPosition.y ~/ tileSize.y * tileSize.y;
     rectClick = Rect.fromLTWH(xGrid, yGrid, tileSize.x, tileSize.y);
+  }
+
+  bool _checkRectInCollision(Rect rect) {
+    return gameRef.collisions(onlyVisible: true).where((element) {
+      return element.containsPoint(rect.center.toVector2());
+    }).isNotEmpty;
   }
 }
