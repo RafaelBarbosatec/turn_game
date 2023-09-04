@@ -70,10 +70,16 @@ class TurnManager extends GameComponent with ChangeNotifier {
       }
     }
     _lastAlly?.onTap();
-    if (_lastAlly != null) {
-      gameRef.bonfireCamera.moveToTargetAnimated(
-          target: _lastAlly!, effectController: EffectController(duration: 1));
-    }
+
+    // if (_lastAlly != null) {
+    //   gameRef.bonfireCamera.moveToTargetAnimated(
+    //     target: _lastAlly!,
+    //     effectController: EffectController(duration: 1),
+    //     onComplete: () {
+    //       // gameRef.bonfireCamera.follow(_lastAlly!);
+    //     },
+    //   );
+    // }
   }
 
   void _selectOneEnemy() {
@@ -86,12 +92,15 @@ class TurnManager extends GameComponent with ChangeNotifier {
       }
     }
     _lastEnemy?.onTap();
-    if (_lastEnemy != null) {
-      gameRef.bonfireCamera.moveToTargetAnimated(
-        target: _lastEnemy!,
-        effectController: EffectController(duration: 1),
-      );
-    }
+    // if (_lastEnemy != null) {
+    //   gameRef.bonfireCamera.moveToTargetAnimated(
+    //     target: _lastEnemy!,
+    //     effectController: EffectController(duration: 1),
+    //     onComplete: () {
+    //       // gameRef.bonfireCamera.follow(_lastEnemy!);
+    //     },
+    //   );
+    // }
   }
 
   @override

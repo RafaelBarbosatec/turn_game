@@ -30,16 +30,17 @@ class PHero extends PlayerAlly {
         marginFromOrigin: tileSize.x,
       );
     } else {
+      enemy.receiveDamage(AttackFromEnum.PLAYER_OR_ALLY, 25, 0);
       simpleAttackMeleeByAngle(
         animation: SpriteSheetBuilder.attackRight,
         size: size,
         angle: BonfireUtil.angleBetweenPoints(center, enemy.center),
-        damage: 25,
+        damage: 0,
         attackFrom: AttackFromEnum.PLAYER_OR_ALLY,
         withPush: false,
       );
       Future.delayed(const Duration(milliseconds: 300))
-        .then((value) => turnManager.doAction());
+          .then((value) => turnManager.doAction());
     }
   }
 }

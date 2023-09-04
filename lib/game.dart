@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:bonfire/bonfire.dart';
 import 'package:flutter/material.dart';
 import 'package:turn_game/characters/ghost.dart';
@@ -7,7 +5,6 @@ import 'package:turn_game/characters/hero.dart';
 import 'package:turn_game/characters/knight.dart';
 import 'package:turn_game/characters/necromancer.dart';
 import 'package:turn_game/interface/turn_painel.dart';
-import 'package:turn_game/main.dart';
 import 'package:turn_game/util/move_camera_controller.dart';
 import 'package:turn_game/util/turn_manager.dart';
 
@@ -17,9 +14,6 @@ class TurnGame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraint) {
-      double size = max(constraint.maxWidth, constraint.minHeight);
-      double tileSizeScrren = size / 20;
-      double zoom = tileSizeScrren / tileSize.x;
       return BonfireWidget(
         map: WorldMapByTiled(
           'map/map1.tmj',
@@ -34,7 +28,10 @@ class TurnGame extends StatelessWidget {
           'painel': (context, game) => const TurnPainel(),
         },
         initialActiveOverlays: const ['painel'],
-        cameraConfig: CameraConfig(zoom: zoom, moveOnlyMapArea: true),
+        cameraConfig: CameraConfig(
+          moveOnlyMapArea: true,
+          zoom: getZoomFromMaxVisibleTile(context, 16, 20),
+        ),
         components: [
           BonfireInjector.instance.get<TurnManager>(),
           MoveCameraController(),

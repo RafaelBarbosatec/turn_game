@@ -43,7 +43,7 @@ abstract class PlayerTurn extends SimpleNpc
     );
 
     setupBarLife(
-      position: Vector2(0, -(tileSize.y / 3)),
+      position: Vector2(tileSize.x / -4, tileSize.y * -0.1),
       borderWidth: 2,
       size: Vector2(size.x * 2, 6),
       borderRadius: BorderRadius.circular(1),
@@ -54,8 +54,8 @@ abstract class PlayerTurn extends SimpleNpc
   Future<void> onLoad() {
     add(
       hitbox = RectangleHitbox(
-        size: Vector2(size.x - 1, size.y - 1),
-        position: Vector2.all(1),
+        size: size / 1.5,
+        position: size / 6,
       ),
     );
     return super.onLoad();
@@ -69,13 +69,19 @@ abstract class PlayerTurn extends SimpleNpc
     } else {
       bool changed = turnManager.selectCharacter(this);
       if (changed) {
-        gameRef.bonfireCamera.moveToTargetAnimated(
-          target: this,
-          effectController: EffectController(duration: 1),
-        );
+        meveCameraToMe();
       }
     }
     _calculateAttackAndMoveGrid();
+  }
+
+  void meveCameraToMe() {
+    gameRef.bonfireCamera.moveToTargetAnimated(
+        target: this,
+        effectController: EffectController(duration: 1),
+        onComplete: () {
+          gameRef.bonfireCamera.follow(this);
+        });
   }
 
   @override
@@ -161,12 +167,7 @@ abstract class PlayerTurn extends SimpleNpc
             width,
             height,
           );
-          bool containCollision = gameRef.collisions().where((element) {
-            return element.toRect().overlaps(rect);
-          }).isNotEmpty;
-          if (!containCollision) {
-            _gridCanMove.add(rect);
-          }
+          _gridCanMove.add(rect);
         },
       );
     });
@@ -246,7 +247,7 @@ abstract class PlayerTurn extends SimpleNpc
 
   @override
   void receiveDamage(AttackFromEnum attacker, double damage, identify) {
-    if (isDead) {
+    if (isDead || damage == 0) {
       return;
     }
     showDamage(damage, config: TextStyle(fontSize: tileSize.x / 2));

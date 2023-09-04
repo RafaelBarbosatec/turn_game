@@ -30,11 +30,12 @@ class Necromancer extends PlayerEnemy {
         marginFromOrigin: tileSize.x,
       );
     } else {
+      ally.receiveDamage(AttackFromEnum.ENEMY, 25, 0);
       simpleAttackMeleeByAngle(
         animation: SpriteSheetBuilder.attackRight,
         size: size,
         angle: BonfireUtil.angleBetweenPoints(center, ally.center),
-        damage: 25,
+        damage: 0,
         attackFrom: AttackFromEnum.ENEMY,
         withPush: false,
       );
