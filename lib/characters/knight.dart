@@ -21,12 +21,12 @@ class Knight extends PlayerAlly {
 
   @override
   void doAttackEnemy(PlayerEnemy enemy) {
-    enemy.receiveDamage(AttackFromEnum.PLAYER_OR_ALLY, 25, 0);
+    enemy.receiveDamage(AttackFromEnum.PLAYER_OR_ALLY, 25,0);
     simpleAttackMeleeByAngle(
       animation: SpriteSheetBuilder.attackRight,
       size: size,
       angle: BonfireUtil.angleBetweenPoints(center, enemy.center),
-      damage: 25,
+      damage: 0,
       attackFrom: AttackFromEnum.PLAYER_OR_ALLY,
       withPush: false,
     );

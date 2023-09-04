@@ -8,7 +8,7 @@ abstract class PlayerTurn extends SimpleNpc
     with
         TapGesture,
         MoveToPositionAlongThePath,
-        ObjectCollision,
+        BlockMovementCollision,
         Attackable,
         UseBarLife {
   late TurnManager turnManager;
@@ -28,6 +28,8 @@ abstract class PlayerTurn extends SimpleNpc
   bool isSelected = false;
   Rect? rectClick;
 
+  ShapeHitbox? hitbox;
+
   void doAttackChar(PlayerTurn char);
 
   PlayerTurn({
@@ -39,19 +41,9 @@ abstract class PlayerTurn extends SimpleNpc
     setupMoveToPositionAlongThePath(
       pathLineColor: Colors.transparent,
     );
-    setupCollision(
-      CollisionConfig(
-        collisions: [
-          CollisionArea.rectangle(
-            size: Vector2(size.x - 1, size.y - 1),
-            align: Vector2.all(1),
-          ),
-        ],
-      ),
-    );
 
     setupBarLife(
-      offset: Vector2(0, -(tileSize.y / 3)),
+      position: Vector2(tileSize.x / -4, tileSize.y * -0.1),
       borderWidth: 2,
       size: Vector2(size.x * 2, 6),
       borderRadius: BorderRadius.circular(1),
@@ -59,17 +51,35 @@ abstract class PlayerTurn extends SimpleNpc
   }
 
   @override
+  Future<void> onLoad() {
+    add(
+      hitbox = RectangleHitbox(
+        size: size / 1.5,
+        position: size / 6,
+      ),
+    );
+    return super.onLoad();
+  }
+
+  @override
   void onTap() {
     if (isSelected) {
       turnManager.selectCharacter(null);
-      gameRef.camera.target = null;
+      gameRef.bonfireCamera.stop();
     } else {
       bool changed = turnManager.selectCharacter(this);
       if (changed) {
-        gameRef.camera.moveToTargetAnimated(this);
+        meveCameraToMe();
       }
     }
     _calculateAttackAndMoveGrid();
+  }
+
+  void meveCameraToMe() {
+    gameRef.bonfireCamera.moveToTargetAnimated(
+      target: this,
+      effectController: EffectController(duration: 1),
+    );
   }
 
   @override
@@ -90,8 +100,10 @@ abstract class PlayerTurn extends SimpleNpc
   }
 
   @override
-  void renderBeforeTransformation(Canvas canvas) {
+  void render(Canvas canvas) {
     if (isSelected) {
+      canvas.save();
+      canvas.translate(-x, -y);
       if (!isMovingAlongThePath) {
         canvas.drawRRect(
           RRect.fromRectAndRadius(
@@ -109,15 +121,16 @@ abstract class PlayerTurn extends SimpleNpc
           _rectPaintClick,
         );
       }
+      canvas.restore();
     }
-    super.renderBeforeTransformation(canvas);
+    super.render(canvas);
   }
 
   @override
   void update(double dt) {
     isSelected = turnManager.isYourTurn(this);
-    double xGrid = center.x ~/ tileSize.x * tileSize.x;
-    double yGrid = center.y ~/ tileSize.y * tileSize.y;
+    double xGrid = absoluteCenter.x ~/ tileSize.x * tileSize.x;
+    double yGrid = absoluteCenter.y ~/ tileSize.y * tileSize.y;
     rectYoutGridPosition = Rect.fromLTWH(xGrid, yGrid, size.x, size.y);
     super.update(dt);
   }
@@ -152,10 +165,8 @@ abstract class PlayerTurn extends SimpleNpc
             width,
             height,
           );
-          bool containCollision = gameRef.collisions().where((element) {
-            return element.rectConsideringCollision.overlaps(rect);
-          }).isNotEmpty;
-          if (!containCollision) {
+          bool isInCollision = _checkRectInCollision(rect);
+          if (!isInCollision) {
             _gridCanMove.add(rect);
           }
         },
@@ -200,9 +211,8 @@ abstract class PlayerTurn extends SimpleNpc
     });
 
     if (findAttack.isNotEmpty) {
-      final players = gameRef.componentsByType<PlayerTurn>().where((element) {
-        return element.rectConsideringCollision
-            .overlaps(findAttack.first.deflate(2));
+      final players = gameRef.query<PlayerTurn>().where((element) {
+        return element.rectCollision.overlaps(findAttack.first.deflate(2));
       });
 
       for (var p in players) {
@@ -220,7 +230,8 @@ abstract class PlayerTurn extends SimpleNpc
 
     if (find.isNotEmpty) {
       final collisions = gameRef.collisions().where((element) {
-        return element.rectConsideringCollision.overlaps(find.first.deflate(2));
+        return element != hitbox &&
+            element.toRect().overlaps(find.first.deflate(2));
       });
 
       if (!collisions.isNotEmpty) {
@@ -237,7 +248,7 @@ abstract class PlayerTurn extends SimpleNpc
 
   @override
   void receiveDamage(AttackFromEnum attacker, double damage, identify) {
-    if (isDead) {
+    if (isDead || damage == 0) {
       return;
     }
     showDamage(damage, config: TextStyle(fontSize: tileSize.x / 2));
@@ -300,5 +311,11 @@ abstract class PlayerTurn extends SimpleNpc
     double xGrid = worldPosition.x ~/ tileSize.x * tileSize.x;
     double yGrid = worldPosition.y ~/ tileSize.y * tileSize.y;
     rectClick = Rect.fromLTWH(xGrid, yGrid, tileSize.x, tileSize.y);
+  }
+
+  bool _checkRectInCollision(Rect rect) {
+    return gameRef.collisions(onlyVisible: true).where((element) {
+      return element.containsPoint(rect.center.toVector2());
+    }).isNotEmpty;
   }
 }

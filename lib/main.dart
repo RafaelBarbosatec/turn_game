@@ -5,7 +5,7 @@ import 'package:turn_game/util/turn_manager.dart';
 
 Vector2 tileSize = Vector2.all(16);
 void main() {
-  BonfireInjector.instance.put((i) => TurnManager());
+  BonfireInjector.instance.putSingleton((i) => TurnManager());
   runApp(const MyApp());
 }
 
