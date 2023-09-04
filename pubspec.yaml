@@ -33,10 +33,7 @@ dependencies:
     sdk: flutter
 
 
-  bonfire: 
-    git:
-      url: https://github.com/RafaelBarbosatec/bonfire.git
-      ref: fbdb430bad9a7a71635543dc71d51025acc7953a
+  bonfire: ^3.0.0-beta.13
 
 dev_dependencies:
   flutter_test:

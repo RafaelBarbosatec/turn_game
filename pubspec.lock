@@ -20,12 +20,11 @@ packages:
   bonfire:
     dependency: "direct main"
     description:
-      path: "."
-      ref: fbdb430bad9a7a71635543dc71d51025acc7953a
-      resolved-ref: fbdb430bad9a7a71635543dc71d51025acc7953a
-      url: "https://github.com/RafaelBarbosatec/bonfire.git"
-    source: git
-    version: "3.0.0-beta.12"
+      name: bonfire
+      sha256: ca5a4962b4e924fb27928d5171adda22773f8d21e2d7282ae2e0164c18cda32c
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0-beta.13"
   boolean_selector:
     dependency: transitive
     description:

@@ -79,9 +79,6 @@ abstract class PlayerTurn extends SimpleNpc
     gameRef.bonfireCamera.moveToTargetAnimated(
       target: this,
       effectController: EffectController(duration: 1),
-      onComplete: () {
-        gameRef.bonfireCamera.follow(this);
-      },
     );
   }
 
